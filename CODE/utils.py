@@ -23,9 +23,10 @@ def load_dfs():
     dfCsvs = os.listdir(folder)
     listDf = list()
     for file in dfCsvs:
-        df = pd.read_csv('DATA/{0}'.format(file), index_col='Date')['Close'].sort_index(ascending=True).to_frame()
-        df.columns = [file.split('.')[0]]
-        listDf.append(df)
+        if file[0] is not '.':
+            df = pd.read_csv('DATA/{0}'.format(file), index_col='Date')['Close'].sort_index(ascending=True).to_frame()
+            df.columns = [file.split('.')[0]]
+            listDf.append(df)
 
     df = listDf[0]
     for dfs in listDf[1:]:

@@ -1,7 +1,5 @@
 from tensorflow import keras as kf
-from utils import *
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
+from CODE.utils import *
 
 
 def create_2f_model(n_units, input_shape, file=None):
@@ -66,13 +64,12 @@ test_df = df.iloc[0:300,0].to_frame()
 test_df['GAP'] = test_df.iloc[:,0]
 test_df['GAP'].iloc[start:start+100]=np.nan
 test_df = test_df.interpolate()
-test_df.plot()
 
 Y_pred, Y_actual=list(), list()
 
 
 for id in range(start,start+100):
-    if id == 0:
+    if id == start:
         x2 = X2[id].reshape(-1, window_size - 1, 1)
     x1 = X1[id].reshape(-1,window_size,input_shape[1]-1)
     Y_pred.append(model.predict([x1, x2]).flatten())
@@ -80,7 +77,6 @@ for id in range(start,start+100):
     x2[0, :-1, 0] = x2[0, 1:, 0]
     x2[0,-1,0] = Y_pred[-1]
 
-plt.plot(np.array(Y_pred), label='pred')
-plt.plot(np.array(Y_actual), label='act')
-plt.legend()
-plt.show()
+test_df['Predicted']=np.nan
+test_df['Predicted'].iloc[start:start+100]=Y_pred
+test_df.plot()
