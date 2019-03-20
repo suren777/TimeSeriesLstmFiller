@@ -1,41 +1,19 @@
-from tensorflow import keras as kf
+from CODE.models import create_2f_model
 from CODE.utils import *
 
 
-def create_2f_model(n_units, input_shape, file=None):
-    window_size,input_dim = input_shape
-    input_1 = kf.layers.Input(shape=(window_size,input_dim-1))
-    input_2 = kf.layers.Input(shape=(window_size - 1, 1))
-
-    lstm_1= kf.layers.LSTM(n_units, return_state=True)
-    output,  output_h, output_c = lstm_1(input_1)
-    encoder_states = [output_h, output_c]
-
-    lstm_2 = kf.layers.LSTM(n_units)
-    lstm_out = lstm_2(input_2, initial_state=encoder_states)
-
-    dense_in = kf.layers.Dense(n_units//2,activation='tanh')(lstm_out)
-    dense_out = kf.layers.Dense(1, activation='linear', use_bias=False)(dense_in)
-
-    model = kf.models.Model(inputs=[input_1, input_2], outputs=[dense_out])
-    model.compile(optimizer='rmsprop', loss='mse')
-
-    if file == file:
-        try:
-            model.load_weights(file)
-        except:
-            pass
-    return model
-
 window_size = 5
 n_units = 200
+corr_threshold = 0.2
 
 df = load_dfs()
-
-# scaler = MinMaxScaler()
 diff_df = df.pct_change(1).iloc[1:,:]
-# scaler.fit(df.values)
-#X1, X2, Y = generate_windows_for_two_factor(df, window_size,scaler=scaler)
+
+correlations = diff_df.corr().values[0]
+filteres_ids = np.argwhere(abs(correlations)> corr_threshold).flatten()
+diff_df = diff_df.iloc[:,filteres_ids]
+print(diff_df.head())
+
 X1, X2, Y = generate_windows_for_two_factor(diff_df, window_size)
 
 file = 'FILES/Models/lstm_2f_model.hdf5'

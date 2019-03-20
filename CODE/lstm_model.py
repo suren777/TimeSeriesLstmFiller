@@ -1,4 +1,4 @@
-from tensorflow import keras as k
+import tensorflow.keras as k
 from CODE.utils import *
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler

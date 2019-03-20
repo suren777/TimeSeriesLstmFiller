@@ -3,9 +3,6 @@ import os
 import numpy as np
 
 
-window_size = 20
-n_units = 200
-
 def generate_windows(df, window_size, scaler=None):
     n_windows = df.values.shape[0]-window_size
     X = list()
