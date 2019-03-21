@@ -28,7 +28,7 @@ def create_2f_model(n_units, input_shape, file=None):
     # dense_out = kf.layers.Dense(1)(dense_in)
     dense_out = kf.layers.TimeDistributed(kf.layers.Dense(1))(lstm_out)
     model = kf.models.Model(inputs=[input_1, input_2], outputs=[dense_out])
-    optimizer = kf.optimizers.RMSprop(lr=0.001, clipnorm=5)
+    optimizer = kf.optimizers.SGD(lr=0.01, momentum=0.2, clipnorm=5)
     model.compile(optimizer=optimizer, loss='mse')
 
     if file == file:
