@@ -9,9 +9,8 @@ def create_2f_model(n_units, input_shape, file=None):
     # output,  output_h, output_c = lstm_1(input_1)
 
     # lstm_1 = kf.layers.Bidirectional(kf.layers.CuDNNLSTM(n_units, return_state=True))
-    lstm_1 = kf.layers.Bidirectional(kf.layers.LSTM(n_units, return_state=True, return_sequences=True))
-    lstm_2 = kf.layers.Bidirectional(kf.layers.LSTM(n_units, return_state=True))
-    _, output_h1, output_c1, output_h2, output_c2 = lstm_2(lstm_1(input_1))
+    lstm_1 = kf.layers.Bidirectional(kf.layers.LSTM(n_units, return_state=True, return_sequences=True))(input_1)
+    _, output_h1, output_c1, output_h2, output_c2 = kf.layers.Bidirectional(kf.layers.LSTM(n_units, return_state=True))(lstm_1)
     output_h = kf.layers.Concatenate()([output_h1, output_h2])
     output_c = kf.layers.Concatenate()([output_c1, output_c2])
 
