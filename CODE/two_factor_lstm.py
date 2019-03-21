@@ -3,7 +3,7 @@ from CODE.utils import *
 
 
 window_size = 5
-n_units = 200
+n_units = 512
 corr_threshold = 0.2
 
 df = load_dfs()
@@ -15,6 +15,8 @@ diff_df = diff_df.iloc[:,filteres_ids]
 print(diff_df.head())
 
 X1, X2, Y = generate_windows_for_two_factor(diff_df, window_size)
+batch_size = 512
+generator = TwoFactorGenerator([X1, X2], Y, batch_size=batch_size)
 
 file = 'FILES/Models/lstm_2f_model.hdf5'
 rf_num = diff_df.values.shape[1]
@@ -22,24 +24,29 @@ input_shape = (window_size,rf_num)
 model = create_2f_model(n_units, input_shape, file)
 
 epochs = 100
-for i in range(epochs):
-    hist = model.fit(x=[X1, X2],
-              y=Y,
-              batch_size=512,
-              verbose=2,
-              epochs=1,
-              validation_split=0.05,
-              callbacks=[])
-    if i > 0:
-        if hist.history['val_loss'][-1] !=  hist.history['val_loss'][-1]:
-            print('NaN loss exiting')
-            break
-        if hist.history['val_loss'][-1]<val_loss:
-            val_loss = hist.history['val_loss'][-1]
-            print("New val_loss: {}\t epoch: {}".format(val_loss,i))
-            model.save_weights(file)
-    else:
-        val_loss =  hist.history['val_loss'][-1]
+
+# for i in range(epochs):
+#     hist = model.fit(x=[X1, X2],
+#               y=Y,
+#               batch_size=512,
+#               verbose=2,
+#               epochs=1,
+#               validation_split=0.05,
+#               callbacks=[])
+#     if i > 0:
+#         if hist.history['val_loss'][-1] !=  hist.history['val_loss'][-1]:
+#             print('NaN loss exiting')
+#             break
+#         if hist.history['val_loss'][-1]<val_loss:
+#             val_loss = hist.history['val_loss'][-1]
+#             print("New val_loss: {}\t epoch: {}".format(val_loss,i))
+#             model.save_weights(file)
+#     else:
+#         val_loss =  hist.history['val_loss'][-1]
+
+model.fit_generator(generator, steps_per_epoch=1, epochs=epochs)
+
+
 
 start = 100
 window = 100
