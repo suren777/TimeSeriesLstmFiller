@@ -1,3 +1,5 @@
+#tensorboard --logdir=C:\Users\uz755fn\PycharmProjects\TimeSeriesLstmFilling\LOGS --host=127.0.0.1
+
 from CODE.models import create_2f_model
 from CODE.utils import *
 
